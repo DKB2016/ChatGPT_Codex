@@ -1,0 +1,84 @@
+---
+- name: Palo Alto backup automation
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  collections:
+    - paloaltonetworks.panos
+
+  vars:
+    # Provide these through inventory, CI variables, or Ansible Vault.
+    panos_provider:
+      ip_address: "{{ panos_hostname }}"
+      username: "{{ panos_username }}"
+      password: "{{ panos_password }}"
+
+    # Optional defaults; override per environment/device group.
+    backup_root_dir: "{{ lookup('env', 'PANOS_BACKUP_DIR') | default('artifacts/backups', true) }}"
+    backup_include_device_state: true
+    backup_timestamp: "{{ lookup('pipe', 'date +%Y%m%d-%H%M%S') }}"
+    backup_prefix: "{{ panos_hostname }}-{{ backup_timestamp }}"
+    running_config_file: "{{ backup_root_dir }}/{{ backup_prefix }}-running-config.xml"
+    device_state_file: "{{ backup_root_dir }}/{{ backup_prefix }}-device-state.tgz"
+
+  tasks:
+    - name: Ensure backup directory exists
+      ansible.builtin.file:
+        path: "{{ backup_root_dir }}"
+        state: directory
+        mode: "0750"
+
+    - name: Export running configuration from firewall
+      paloaltonetworks.panos.panos_export:
+        provider: "{{ panos_provider }}"
+        category: configuration
+        filename: "{{ running_config_file }}"
+
+    - name: Export device state archive from firewall (optional)
+      paloaltonetworks.panos.panos_export:
+        provider: "{{ panos_provider }}"
+        category: device-state
+        filename: "{{ device_state_file }}"
+      when: backup_include_device_state | bool
+
+    - name: Gather backup artifact stats
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop: >-
+        {{ [running_config_file] +
+           ((backup_include_device_state | bool) | ternary([device_state_file], [])) }}
+      register: backup_artifacts
+
+    - name: Ensure backup artifacts are not empty
+      ansible.builtin.assert:
+        that:
+          - item.stat.exists
+          - item.stat.size > 0
+        fail_msg: "Backup artifact validation failed for {{ item.stat.path }}"
+      loop: "{{ backup_artifacts.results }}"
+
+    - name: Calculate sha256 checksums for backup artifacts
+      ansible.builtin.command: "sha256sum {{ item }}"
+      changed_when: false
+      loop: >-
+        {{ [running_config_file] +
+           ((backup_include_device_state | bool) | ternary([device_state_file], [])) }}
+      register: checksum_output
+
+    - name: Write checksum manifest
+      ansible.builtin.copy:
+        dest: "{{ backup_root_dir }}/{{ backup_prefix }}-sha256sum.txt"
+        mode: "0640"
+        content: |
+          {% for result in checksum_output.results %}
+          {{ result.stdout }}
+          {% endfor %}
+
+    - name: Show backup summary
+      ansible.builtin.debug:
+        msg:
+          - "Backups written to {{ backup_root_dir }}"
+          - "Running config: {{ running_config_file }}"
+          - "Device state: {{ (backup_include_device_state | bool) | ternary(device_state_file, 'skipped') }}"
+          - "Checksums: {{ backup_root_dir }}/{{ backup_prefix }}-sha256sum.txt"
