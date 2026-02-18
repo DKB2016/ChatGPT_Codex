@@ -1,0 +1,12 @@
+services:
+  mock-panos:
+    build:
+      context: ./mock-panos
+    container_name: mock-panos
+    ports:
+      - "8080:8080"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/healthz').read()"]
+      interval: 10s
+      timeout: 3s
+      retries: 5

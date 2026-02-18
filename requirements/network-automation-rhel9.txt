@@ -1,0 +1,50 @@
+# RHEL9 / Python 3.9 network automation stack
+# Install with:
+#   python3.9 -m pip install -r requirements/network-automation-rhel9.txt
+
+# --- Core SSH / device access ---
+netmiko
+paramiko
+scrapli
+scrapli-community
+ncclient
+
+# --- Orchestration frameworks ---
+nornir
+nornir-utils
+nornir-netmiko
+nornir-napalm
+nornir-scrapli
+nornir-netbox
+
+# --- Multi-vendor abstraction / parsing ---
+napalm
+textfsm
+ntc-templates
+ttp
+genie
+
+# --- Palo Alto automation ---
+pan-os-python
+pan-python
+pandevice
+
+# --- Cisco test automation ---
+pyats[full]
+unicon
+
+# --- Source-of-truth / infra tooling ---
+pynetbox
+python-dotenv
+jinja2
+pyyaml
+requests
+httpx
+rich
+tenacity
+passlib
+cryptography
+
+# NOTE:
+# - `json` and `pprint` are built into Python's standard library (no pip install needed).
+# - If you automate Cisco ACI, consider adding `acitoolkit` in your own fork.
