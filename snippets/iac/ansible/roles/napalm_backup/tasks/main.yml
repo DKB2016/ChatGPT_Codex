@@ -1,0 +1,16 @@
+---
+- name: Collect and save running config using NAPALM getter
+  napalm_get_facts:
+    hostname: "{{ ansible_host }}"
+    username: "{{ ansible_user }}"
+    password: "{{ ansible_password }}"
+    dev_os: "{{ 'ios' if ansible_network_os == 'cisco.ios.ios' else 'nxos' }}"
+    filter:
+      - config
+  register: napalm_data
+
+- name: Write backup artifact
+  delegate_to: localhost
+  copy:
+    dest: "artifacts/{{ inventory_hostname }}-running-config.json"
+    content: "{{ napalm_data.ansible_facts.napalm_config | to_nice_json }}"

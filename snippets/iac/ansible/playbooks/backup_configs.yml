@@ -1,0 +1,7 @@
+---
+- name: Backup running config across platforms
+  hosts: all
+  gather_facts: false
+
+  roles:
+    - napalm_backup

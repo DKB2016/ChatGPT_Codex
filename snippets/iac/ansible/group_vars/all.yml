@@ -1,0 +1,4 @@
+ansible_user: "{{ lookup('env', 'NET_USER') }}"
+ansible_password: "{{ lookup('env', 'NET_PASS') }}"
+ansible_become: true
+ansible_become_method: enable
