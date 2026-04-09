@@ -1,0 +1,7 @@
+---
+- name: Push base interface descriptions
+  hosts: all
+  gather_facts: false
+
+  roles:
+    - base_config

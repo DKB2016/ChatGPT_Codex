@@ -1,0 +1,14 @@
+---
+- name: IOS XE base config
+  when: ansible_network_os == 'cisco.ios.ios'
+  cisco.ios.ios_config:
+    lines:
+      - description Automated by Ansible
+    parents: interface GigabitEthernet1
+
+- name: NX-OS base config
+  when: ansible_network_os == 'cisco.nxos.nxos'
+  cisco.nxos.nxos_config:
+    lines:
+      - description Automated by Ansible
+    parents: interface Ethernet1/1
