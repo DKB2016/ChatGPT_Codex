@@ -1,6 +1,6 @@
 ---
-- name: Backup running config across platforms
-  hosts: all
+- name: Backup running config for Cisco IOS XE and NX-OS devices
+  hosts: cisco_automation
   gather_facts: false
 
   roles:
