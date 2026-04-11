@@ -1,0 +1,8 @@
+---
+- name: Section 03 role design plan
+  hosts: localhost
+  gather_facts: false
+  tasks:
+    - name: Reminder for reusable role structure
+      ansible.builtin.debug:
+        msg: "Create roles/common, roles/platform_*, defaults, vars, handlers"

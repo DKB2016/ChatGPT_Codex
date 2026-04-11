@@ -1,0 +1,9 @@
+---
+- name: Section 05 provision and validate workflow
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Workflow placeholder
+      ansible.builtin.debug:
+        msg: "Chain provisioning, validation, and rollback tasks"

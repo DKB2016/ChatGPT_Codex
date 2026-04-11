@@ -1,0 +1,9 @@
+---
+- name: Section 02 API workflow
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  tasks:
+    - name: Placeholder for token request and API operation
+      ansible.builtin.debug:
+        msg: "Implement ansible.builtin.uri tasks for login + REST action"

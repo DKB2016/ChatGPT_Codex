@@ -1,0 +1,8 @@
+---
+- name: Section 01 network fundamentals baseline
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Show baseline reminder
+      ansible.builtin.debug:
+        msg: "Replace with ios_facts/nxos_facts and baseline assertions"

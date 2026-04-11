@@ -1,0 +1,8 @@
+---
+- name: Section 04 enforce config state
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Placeholder idempotent config block
+      ansible.builtin.debug:
+        msg: "Replace with platform module tasks + backup + compliance assertions"
